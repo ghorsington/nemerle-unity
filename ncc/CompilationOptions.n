@@ -82,6 +82,8 @@ namespace Nemerle.Compiler
     public mutable Sources : list [ISource];
     public mutable TryStartDebugger : bool;
 
+    public mutable IgnoreAccessChecks : bool;
+
     public mutable Platform : string;
 
     private disabled_keywords : Hashtable [string, list [list [string]]] = Hashtable ();
@@ -162,6 +164,7 @@ namespace Nemerle.Compiler
       MainClass = null;
       StrongAssemblyKeyName = null;
       DisableExternalParsers = false;
+      IgnoreAccessChecks = false;
       MatchOptions.Clear();
     }
 
@@ -737,6 +740,11 @@ namespace Nemerle.Compiler
           aliases = [],
           help = "Display compilation time for methods with Nemerle.Diagnostics.CompileStatistic attribute",
           handler = () => this.ShowCompilerStatistics = true),
+
+        Getopt.CliOption.Flag (name = "-ignore-access-checks",
+          aliases = [],
+          help = "Ignores access checks when compiling the assembly. Usable only when access ignoring is enabled on CLR level.",
+          handler = () => this.IgnoreAccessChecks = true),
                           
         Getopt.CliOption.Int (name = "-min-switch-size-ordinals",
                           aliases = ["-Oswo"],
