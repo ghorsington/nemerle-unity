@@ -804,7 +804,7 @@ public partial class TypeBuilder : TypeInfo
   public override GetMembers (bindingAttr : BindingFlags) : list[IMember]
   {
     get_members (bindingAttr, fun (m : IMember) {
-      constrain_member (m, bindingAttr)
+      constrain_member (m, bindingAttr, Manager.Options.IgnoreAccessChecks)
     })
   }
 
@@ -830,7 +830,7 @@ public partial class TypeBuilder : TypeInfo
   public override GetFields (bindingAttr : BindingFlags) : list[IField]
   {
     def mems = get_members (bindingAttr, fun (x : IMember) {
-      x.MemberKind == MemberKinds.Field && constrain_member (x, bindingAttr)
+      x.MemberKind == MemberKinds.Field && constrain_member (x, bindingAttr, Manager.Options.IgnoreAccessChecks)
     });
     NList.Map (mems, fun (x) { x :> IField })
   }
@@ -849,7 +849,7 @@ public partial class TypeBuilder : TypeInfo
   {
     def mems = get_members (bindingAttr, fun (x : IMember) {
       if (x.MemberKind == MemberKinds.Method)
-        constrain_member (x, bindingAttr)
+        constrain_member (x, bindingAttr, Manager.Options.IgnoreAccessChecks)
       else
         false
     });
@@ -869,7 +869,7 @@ public partial class TypeBuilder : TypeInfo
   {
     def mems = get_members (bindingAttr, fun (x : IMember) {
       if (x.MemberKind == MemberKinds.Constructor)
-        constrain_member (x, bindingAttr)
+        constrain_member (x, bindingAttr, Manager.Options.IgnoreAccessChecks)
       else
         false
     });
@@ -885,7 +885,7 @@ public partial class TypeBuilder : TypeInfo
   public GetProperties (bindingAttr : BindingFlags) : list[IProperty]
   {
     def mems = get_members (bindingAttr, fun (x : IMember) {
-      x.MemberKind == MemberKinds.Property && constrain_member (x, bindingAttr)
+      x.MemberKind == MemberKinds.Property && constrain_member (x, bindingAttr, Manager.Options.IgnoreAccessChecks)
     });
     NList.Map (mems, fun (x) { x :> IProperty })
   }
@@ -901,7 +901,7 @@ public partial class TypeBuilder : TypeInfo
   public GetEvents (bindingAttr : BindingFlags) : list[IEvent]
   {
     def mems = get_members (bindingAttr, fun (x : IMember) {
-      x.MemberKind == MemberKinds.Event && constrain_member (x, bindingAttr)
+      x.MemberKind == MemberKinds.Event && constrain_member (x, bindingAttr, Manager.Options.IgnoreAccessChecks)
     });
     NList.Map (mems, fun (x) { x :> IEvent })
   }
@@ -3112,7 +3112,8 @@ public partial class TypeBuilder : TypeInfo
           }
           else
             false
-    )
+          )
+      || Manager.Options.IgnoreAccessChecks
   }
 
   mutable _conditions : list[string] = [];

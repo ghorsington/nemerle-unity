@@ -364,7 +364,14 @@ namespace Nemerle.Compiler
           // if we expect matching on a class, transform the pattern
           // to include field names
           | Some (FixedType.Class (ti, _)) =>
-            def flags = BindingFlags.DeclaredOnly %| BindingFlags.Public %| BindingFlags.Instance;
+            def flags = BindingFlags.DeclaredOnly %| BindingFlags.Public %| BindingFlags.Instance 
+                        %| {
+                          if (Manager.Options.IgnoreAccessChecks)
+                            BindingFlags.NonPublic
+                          else
+                            BindingFlags.Default
+                        };
+            // FIXME: Might need to ignore compiler generated types
             def mems  = ti.GetFields(flags).Filter(withoutIgnoreFieldAttribute);
             def names = mems.Map(_.Name);
             match(pats.Length)

@@ -220,7 +220,8 @@ namespace Nemerle.Compiler
       {
         handle.IsPublic 
           || source.IsDerivedFrom(DeclaringType) && (handle.IsFamily || handle.IsFamilyOrAssembly)
-          || this.library.IsFriend && (handle.IsFamilyOrAssembly ||  handle.IsAssembly);
+          || this.library.IsFriend && (handle.IsFamilyOrAssembly ||  handle.IsAssembly)
+          || this.library.Manager.Options.IgnoreAccessChecks;
       }
     }
   }

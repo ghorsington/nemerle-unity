@@ -166,7 +166,8 @@ namespace Nemerle.Compiler
       {
         handle.IsPublic 
           || source.IsDerivedFrom(DeclaringType) && (handle.IsFamily || handle.IsFamilyOrAssembly)
-          || (this.library.IsFriend && (handle.IsAssembly || handle.IsFamilyOrAssembly));
+          || (this.library.IsFriend && (handle.IsAssembly || handle.IsFamilyOrAssembly))
+          || this.library.Manager.Options.IgnoreAccessChecks;
       }
     }
   }

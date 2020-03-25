@@ -516,7 +516,7 @@ namespace Nemerle.Compiler
 
       try
       {
-        def types = if (lib.IsFriend)
+        def types = if (lib.IsFriend || lib.Manager.Options.IgnoreAccessChecks)
           assembly.GetTypes().Filter(t => t.IsPublic || t.IsNotPublic
             || t.IsNestedPublic ||t.IsNestedFamORAssem || t.IsNestedAssembly).ToArray()
         else

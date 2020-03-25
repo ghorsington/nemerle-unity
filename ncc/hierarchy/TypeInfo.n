@@ -98,7 +98,7 @@ public interface IMember
   GetMemType () : FixedType;
   Location : Location { get; }
   CanAccess (source : TypeInfo) : bool;
-  CanAccess(memberTypeInfo : TypeInfo, currentTypeInfo : TypeInfo, isThisAccess : bool) : bool;
+  CanAccess(memberTypeInfo : TypeInfo, currentTypeInfo : TypeInfo, isThisAccess : bool, shouldIgnoreChecks : bool = false) : bool;
   IsObsolete : bool { get; }
   IsPrivate : bool { get; }
 
@@ -268,7 +268,7 @@ public abstract class MemberInfo
     (msg, is_error)
   }
 
-  public CanAccess(memberTypeInfo : TypeInfo, currentTypeInfo : TypeInfo, isThisAccess : bool) : bool
+  public CanAccess(memberTypeInfo : TypeInfo, currentTypeInfo : TypeInfo, isThisAccess : bool, shouldIgnoreChecks : bool = false) : bool
   {
     def isCurrentOrNested(memberTypeInfo, currentTypeInfo)
     {
@@ -280,7 +280,9 @@ public abstract class MemberInfo
         isCurrentOrNested(memberTypeInfo, currentTypeInfo.DeclaringType)
     }
 
-    if (IsPublic)
+    if (shouldIgnoreChecks)
+      true
+    else if (IsPublic)
       true
     else if (IsInternal && 
     		(memberTypeInfo is TypeBuilder ||
@@ -403,7 +405,7 @@ public abstract class TypeInfo : MemberInfo, IMember,
     when (NamespaceNode.Children != null)
       foreach (x in NamespaceNode.Children.Values)
         when (x.LookupValue() is Some(t))
-          when (constrain_member(t, attr))
+          when (constrain_member(t, attr, Manager.Options.IgnoreAccessChecks))
             result.Add(t);
 
     result.NToList()
@@ -414,7 +416,7 @@ public abstract class TypeInfo : MemberInfo, IMember,
     GetNestedTypes (BindingFlags.Static %| BindingFlags.Instance %| BindingFlags.Public %| BindingFlags.NonPublic)
   }
   
-  internal static constrain_member(m : IMember, flags : BindingFlags) : bool
+  internal static constrain_member(m : IMember, flags : BindingFlags, shouldIgnoreAccess : bool = false) : bool
   {
     def is_public = m.Attributes %&& NemerleModifiers.Public;
     // if flag is Public then always return all public members
@@ -426,6 +428,8 @@ public abstract class TypeInfo : MemberInfo, IMember,
         && (m.IsStatic || flags %&& BindingFlags.Instance)
         && (!is_public || flags %&& BindingFlags.Public)
         && (is_public || flags %&& BindingFlags.NonPublic)
+      // If ignore access checks is enabled, always return all members
+      || shouldIgnoreAccess
   }
 
   #region Builtins

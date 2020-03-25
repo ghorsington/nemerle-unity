@@ -195,6 +195,7 @@ public abstract class MemberBuilder : MemberInfo, IMember, System.IEquatable[IMe
         result = tc.Equals (declaring_type) || IsProtected && tc.IsDerivedFrom(declaring_type);
       result
     })
+    || Manager.Options.IgnoreAccessChecks
   }
 
   public OverloadName : string

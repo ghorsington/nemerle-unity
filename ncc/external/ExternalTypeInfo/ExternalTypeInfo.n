@@ -591,9 +591,9 @@ namespace Nemerle.Compiler
         {
           if (bindingAttr %&& BindingFlags.DeclaredOnly)
             this.Equals (x.DeclaringType) &&
-            TypeBuilder.constrain_member (x, bindingAttr)
+            TypeBuilder.constrain_member (x, bindingAttr, this.library.Manager.Options.IgnoreAccessChecks)
           else
-            TypeBuilder.constrain_member (x, bindingAttr)
+            TypeBuilder.constrain_member (x, bindingAttr, this.library.Manager.Options.IgnoreAccessChecks)
         }
 
         GetMembers().RevFilter(check)
@@ -690,7 +690,7 @@ namespace Nemerle.Compiler
           def m = member_array [i];
 
 //          Message.Debug ($"adding $m from $this $(this.GetHashCode ())");
-          unless (is_internal(m) && !this.library.IsFriend)
+          unless (is_internal(m) && !this.library.IsFriend && !this.library.Manager.Options.IgnoreAccessChecks)
           {
 //            Message.Debug ($ "add_member: $m to $(this) [$(GetHashCode ())]");
             match (imember_of_memberinfo (m))
@@ -756,7 +756,8 @@ namespace Nemerle.Compiler
               && (system_type.IsNestedFamily || system_type.IsNestedFamORAssem))
           || (this.library.IsFriend
               && (system_type.IsNotPublic || system_type.IsNestedAssembly
-          || system_type.IsNestedPublic || system_type.IsNestedFamORAssem));
+          || system_type.IsNestedPublic || system_type.IsNestedFamORAssem))
+          || this.library.Manager.Options.IgnoreAccessChecks
       }
 
       public override UnderlyingType : TypeInfo

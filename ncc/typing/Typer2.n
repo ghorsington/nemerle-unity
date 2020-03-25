@@ -1055,7 +1055,7 @@ namespace Nemerle.Compiler
               | _          with isFromThis = false => (objType.Fix().TypeInfo ?? meth.DeclaringType, isFromThis)
             };
 
-            unless (meth.CanAccess(memberTypeInfo, current_type, isFromThis))
+            unless (meth.CanAccess(memberTypeInfo, current_type, isFromThis, Manager.Options.IgnoreAccessChecks))
               if (isFromThis)
                 Message.Error($"property accessor $meth is inaccessible");
               else
@@ -1152,7 +1152,7 @@ namespace Nemerle.Compiler
                 | _                          => fixedTy.TypeInfo ?? meth.DeclaringType
               };
 
-            unless (meth.CanAccess(memberTypeInfo, current_type, isFromThis))
+            unless (meth.CanAccess(memberTypeInfo, current_type, isFromThis, Manager.Options.IgnoreAccessChecks))
               if (isFromThis)
                 Message.Error($"$meth is inaccessible");
               else
